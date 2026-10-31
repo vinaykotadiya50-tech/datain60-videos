@@ -14,3 +14,4 @@ images/card-2026-10-30-pm.png
 videos/anim-2026-10-30.mp4
 videos/ep05.mp4
 videos/anim-2026-10-31.mp4
+videos/anim-2026-10-31-2.mp4
