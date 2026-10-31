@@ -4,6 +4,8 @@ python3 ep.py START END OUT.mp4  |  python3 ep.py still DIR t1 t2 ...
 """
 import math, sys, subprocess
 import numpy as np, cairo
+sys.path.insert(0, "/home/claude/engine/anim/waves"); sys.path.insert(0, __import__("os").path.dirname(__import__("os").path.abspath(__file__)))
+from stickfig import hero, hero_track, POSES, run_pose, pose_at
 sys.path.insert(0, "/home/claude/engine/anim")
 from example_story_mean_median import (text, text_w, line, glow, seg, sm, eo, ei, back, elastic, win, clamp, lerp, arc, land_sq, noise,
                                        num, dot, Track, draw_world, cam, logo, wrap, W, H, FPS, G, UI, MATH, TEAL, CORAL, AMBER, WHITE, MUTED)
@@ -74,8 +76,8 @@ def intro(u):
     def d(c):
         look = (1, 0) if 3.0 < u < 4.2 else (-1, 0) if 4.2 < u < 5.0 else (0, 0)
         sq = 0.3 * math.sin(u * 3) * seg(u, 0.5, 2.0) * (1 - seg(u, 2.0, 2.4))
-        dot(c, 540, G, s=1.7, look=look, sq=sq, blink=1.2 < u < 1.33 or 4.6 < u < 4.73, wide=u > 5.0)
-        bubble(c, 610, G - 200, "Bring it on!", win(u, 2.0, 4.4, 0.25))
+        hero(c, 540, G, pose_at(u, POSES["stand"], [(1.9, 4.4, "ready"), (2.3, 2.6, "punch"), (2.9, 3.2, "punch"), (5.0, 6.2, "ready")]), s=1.35, look=look, blink=1.2 < u < 1.33 or 4.6 < u < 4.73, wide=u > 5.0)
+        bubble(c, 610, G - 330, "Bring it on!", win(u, 2.0, 4.4, 0.25))
         return {}
     return cam(540, 1000, z), d, dict(title=1 - seg(u, 4.5, 5.0))
 sfx("intro", 0.05, "pop", f=520); sfx("intro", 2.0, "boing", g=0.6); sfx("intro", 4.9, "swell", d=1.2)
@@ -117,9 +119,9 @@ def w1(u):
         ring(c, nine_x - 60, G - 200, u - 7.0, YEL, rmax=520)
         burst(c, nine_x, G - 120, u - 8.8, 12, n=24, col=YEL, spd=500)
         burst(c, 680, G - 60, u - 10.6, 13, n=18, col=WHITE, spd=500)
-        dot(c, dd["x"], dd["y"], s=1.45, look=(1, 0) if u < 9 else (1, -0.3), sq=dd["sq"], walk=dd["walk"], rot=dd["rot"],
-            wide=0.6 < u < 3.0, happy=u > 11.0, blink=False)
-        bubble(c, 330, G - 190, "Ouch!", win(u, 4.4, 5.6, 0.2), 36)
+        hero_track(c, dd, u, [(0.6, 2.7, "scared"), (2.75, 2.98, "crouch"), (3.55, 4.4, "hurt"), (4.4, 4.9, "crouch"), (5.0, 5.8, "cast"), (5.8, 6.2, "wind"), (6.2, 6.7, "throw"), (10.45, 10.85, "kick"), (11.0, 14.0, "victory")], s=1.35, look=(1, 0) if u < 9 else (1, -0.3),
+            wide=0.6 < u < 3.0, happy=u > 11.0)
+        bubble(c, 330, G - 330, "Ouch!", win(u, 4.4, 5.6, 0.2), 36)
         res["flash"] = 0.55 * math.exp(-(u - 7.0) * 5) * (u > 7.0)
         return res
     return cam(560, 1000, 1.0, shake=shake), d, dict(cap=[(0.4, 4.2, "A giant 9 stomps in. Way too big to jump!"),
@@ -168,8 +170,8 @@ def w2(u):
         if 0.3 < u < 3.2:
             for k in range(6):
                 px = x + 140 + k * 40 + (u * 300) % 40; c.set_source_rgba(1, 1, 1, 0.15); c.arc(px, G - 10 - k * 4, 10 - k, 0, 6.3); c.fill()
-        dot(c, dd["x"], dd["y"], s=1.45, look=(1, 0), sq=dd["sq"], walk=dd["walk"], rot=dd["rot"], wide=0.3 < u < 3.4, happy=u > 10.2)
-        bubble(c, 230, G - 190, "Nope nope nope", win(u, 1.0, 3.2, 0.2), 34)
+        hero_track(c, dd, u, [(0.3, 1.25, "scared"), (2.75, 3.2, "scared"), (3.2, 4.4, "cast"), (4.4, 8.6, "point"), (10.2, 14.0, "victory")], s=1.35, look=(1, 0), wide=0.3 < u < 3.4, happy=u > 10.2)
+        bubble(c, 230, G - 330, "Nope nope nope", win(u, 1.0, 3.2, 0.2), 34)
         return dict(flash=0.45 * math.exp(-(u - 4.4) * 5) * (u > 4.4))
     return cam(560, 1000, 1.0, shake=shake), d, dict(cap=[(0.3, 4.2, "Infinity rolls in. It never stops growing!"),
                                                        (4.4, 8.4, "Put it under 1: the bigger x gets, the smaller 1/x gets"),
@@ -226,8 +228,8 @@ def w3(u):
                 px = lerp(gx - 140, -150, p); py = G - 50
                 text(c, "−1", px, py, 80, CORAL, 1, glw=0.8)
                 for j in range(5): c.set_source_rgba(*CORAL, 0.25 - j * 0.05); c.arc(px + 60 + j * 26, py, 10 - j, 0, 6.3); c.fill()
-        dot(c, dd["x"], dd["y"], s=1.45, look=(1, -0.6), sq=dd["sq"], walk=dd["walk"], rot=dd["rot"], wide=1.0 < u < 5.0, happy=u > 8.0)
-        bubble(c, 420, G - 190, "Missed me!", win(u, 4.9, 5.9, 0.2), 34) if False else None
+        hero_track(c, dd, u, [(0.4, 1.9, "ready"), (5.0, 5.3, "cast"), (5.3, 5.6, "wind"), (5.6, 6.1, "throw"), (6.4, 7.8, "point"), (8.0, 14.0, "victory")], s=1.35, look=(1, -0.6), wide=1.0 < u < 5.0, happy=u > 8.0)
+        bubble(c, 420, G - 330, "Missed me!", win(u, 4.9, 5.9, 0.2), 34) if False else None
         return dict(flash=0.6 * math.exp(-(u - 7.8) * 5) * (u > 7.8))
     return cam(580, 980, 1.0, shake=shake), d, dict(cap=[(0.3, 4.4, "A ghost made of e, i and pi throws −1s!"),
                                                        (4.6, 8.4, "Because e^(i pi) = −1... so Dot adds 1"),
@@ -278,7 +280,7 @@ def w4(u):
                 text(c, "d/dx", x, y, 90 * max(sp, .01), AMBER, 1, face=MATH, rot=tt * 6.3, glw=0.9)
             burst(c, vx - 60, G - 400, u - h, 40 + i, n=34, col=AMBER, spd=800)
             ring(c, vx - 60, G - 400, u - h, AMBER, rmax=420)
-        dot(c, dd["x"], dd["y"], s=1.45, look=(1, -0.4), sq=dd["sq"], walk=dd["walk"], rot=dd["rot"], wide=u < 4.0, happy=u > 11.5)
+        hero_track(c, dd, u, [(0.2, 1.5, "scared"), (2.2, 3.6, "ready")] + [a for h in HITS4 for a in ((h - 1.2, h - 0.85, "wind"), (h - 0.85, h - 0.4, "throw"))] + [(11.5, 14.0, "victory")], s=1.35, look=(1, -0.4), wide=u < 4.0, happy=u > 11.5)
         return dict(flash=sum(0.35 * math.exp(-(u - h) * 6) * (u > h) for h in HITS4))
     return cam(600, 960, 1.0, shake=shake), d, dict(cap=[(0.3, 4.2, "A parabola whips around: y = x squared"),
                                                        (4.4, 7.9, "Differentiate! x squared becomes 2x"),
@@ -371,10 +373,10 @@ def w5(u):
             glow(c, SQ[0] + SQ[2] / 2, SQ[1] + SQ[2] / 2, 420, GREEN, 0.45 * ea * (1 - seg(u, 14, 16)))
             c.set_source_rgba(*GREEN, 0.9 * ea); c.rectangle(SQ[0], SQ[1], SQ[2], SQ[2]); c.fill()
             text(c, "= 1", SQ[0] + SQ[2] / 2, SQ[1] + SQ[2] / 2, 150 * max(back(seg(u, 12.0, 12.5)), .01), (0.02, 0.06, 0.05), ea, face=UI, bold=True)
-        dot(c, dd["x"], dd["y"], s=1.45, look=(1, -0.8) if u < 12 else (0, -0.3), sq=dd["sq"], walk=dd["walk"], rot=dd["rot"],
+        hero_track(c, dd, u, [(0.6, 2.5, "ready"), (3.3, 4.35, "scared"), (5.0, 6.1, "point"), (6.2, 11.8, "cast"), (12.4, 20.0, "victory")], s=1.35, look=(1, -0.8) if u < 12 else (0, -0.3),
             wide=1.0 < u < 5.0, happy=u > 12.4)
-        bubble(c, 330, G - 200, "Uh oh...", win(u, 3.4, 4.4, 0.2), 34)
-        bubble(c, 330, SQ[1] - 200, "One!", win(u, 15.0, 17.0, 0.2), 38)
+        bubble(c, 330, G - 330, "Uh oh...", win(u, 3.4, 4.4, 0.2), 34)
+        bubble(c, 330, SQ[1] - 330, "One!", win(u, 15.0, 17.0, 0.2), 38)
         return dict(flash=0.6 * math.exp(-(u - 12.0) * 4) * (u > 12.0))
     return cam(560, cy, z, shake=shake), d, dict(cap=[(0.3, 4.6, "The Sum Titan: 1/2 + 1/4 + 1/8 + ... forever!"),
                                                     (4.8, 8.9, "Dot draws a 1 by 1 square..."),
@@ -391,7 +393,7 @@ sfx("w5", 14.0, "boing"); [sfx("w5", 16.1 + 0.9 * k, "tink", p=k + 4) for k in r
 # ================================================================= FINALE
 def fin(u):
     def d(c):
-        dot(c, 540, G, s=1.6, happy=True, sq=0.25 * math.sin(u * 8) * (u < 3))
+        hero(c, 540, G - 60 * abs(math.sin(u * 4)) * (u < 3), "victory", s=1.2, happy=True, air=False)
         return {}
     r = lerp(2200, 330, sm(seg(u, 0.3, 3.0)))
     return cam(540, 1080, lerp(1.0, 0.8, sm(seg(u, 0.3, 3.0)))), d, dict(circle=(r, seg(u, 0.3, 1.0)), win=seg(u, 1.6, 2.2) * (1 - seg(u, 5.2, 5.6)),
@@ -491,7 +493,7 @@ def frame(c, T):
         text(c, "DATA in 60s", 540 + 50, 785, 84, WHITE, end, face=UI, bold=True)
         text(c, "Maths is a superpower", 540, 905, 44, YEL, end, face=UI, bold=True)
         text(c, "Follow for more Dot vs Math", 540, 1500, 50, TEAL, end * seg(u, 6.2, 6.8), face=UI, bold=True)
-        dot(c, 540, 1300, s=1.5, happy=True, a=end)
+        hero(c, 540, 1380, "victory", s=1.0, happy=True, a=end)
     if T > 1.0 and end <= 0:
         logo(c, 418, 120, 0.7, 0.5); text(c, "DATA in 60s", 560, 108, 34, WHITE, 0.5, face=UI, bold=True)
     fd = extra.get("fade", 0)
