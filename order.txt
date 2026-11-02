@@ -19,3 +19,4 @@ videos/anim-2026-10-31-3.mp4
 videos/anim-2026-10-31-4.mp4
 videos/anim-2026-11-01-am.mp4
 videos/anim-2026-11-01.mp4
+videos/anim-2026-11-02-am.mp4
